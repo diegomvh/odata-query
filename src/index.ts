@@ -95,6 +95,41 @@ export type QueryOptions<T> = ExpandOptions<T> & {
 export const ITEM_ROOT = "";
 
 export default function <T>({
+  select,
+  search,
+  skiptoken,
+  format,
+  top,
+  skip,
+  filter,
+  transform,
+  orderBy,
+  key,
+  count,
+  expand,
+  action,
+  func
+}: Partial<QueryOptions<T>> = {}) {
+  const [path, query] = buildPathAndQuery({
+    select, 
+    search, 
+    skiptoken, 
+    format, 
+    top, 
+    skip, 
+    filter, 
+    transform, 
+    orderBy, 
+    key, 
+    count, 
+    expand, 
+    action, 
+    func});
+
+  return buildUrl(path, query);
+}
+
+export function buildPathAndQuery<T>({
   select: $select,
   search: $search,
   skiptoken: $skiptoken,
@@ -109,7 +144,7 @@ export default function <T>({
   expand,
   action,
   func
-}: Partial<QueryOptions<T>> = {}) {
+}: Partial<QueryOptions<T>> = {}): [string, {[name: string]: any}] {
   let path: string = '';
   let aliases: Alias[] = [];
 
@@ -172,7 +207,7 @@ export default function <T>({
       , {}));
   }
 
-  return buildUrl(path, { $select, $search, $skiptoken, $format, ...params });
+  return [path, { $select, $search, $skiptoken, $format, ...params }];
 }
 
 function renderPrimitiveValue(key: string, val: any, aliases: Alias[] = []) {
